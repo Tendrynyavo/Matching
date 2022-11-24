@@ -13,9 +13,8 @@ public class Liste extends HttpServlet {
         throws ServletException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("id");
-        boolean check = (request.getParameter("check") != null) ? Boolean.parseBoolean(request.getParameter("check")) : true;
         try {
-            request.setAttribute("proposition", user.getProposition(check));
+            request.setAttribute("proposition", user.getProposition((request.getParameter("check") != null) ? Boolean.parseBoolean(request.getParameter("check")) : true));
             request.setAttribute("user", user);
             request.setAttribute("axe", Axe.convert(new Axe().getData(BddObject.getPostgreSQL(), "idAxe")));
             RequestDispatcher dispat = request.getRequestDispatcher("liste.jsp");

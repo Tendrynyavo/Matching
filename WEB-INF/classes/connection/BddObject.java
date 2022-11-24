@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 import java.util.Vector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
 public abstract class BddObject {
 
     String prefix;
@@ -90,7 +89,7 @@ public abstract class BddObject {
     public Object[] getData(Connection connection, String order, String... predicat) throws Exception {
         String sql = (predicat.length == 0) ? "SELECT * FROM " + this.getTable() 
                     : "SELECT * FROM " + this.getTable() + " WHERE " + predicat(predicat);
-        if (order != null) sql += " ORDER BY "+ order;
+        if (order != null) sql += " ORDER BY " + order;
         return getData(sql, connection);
     }
 

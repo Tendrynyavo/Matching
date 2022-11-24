@@ -17,10 +17,8 @@ public class InsertInfo extends HttpServlet {
             ServletContext context = this.getServletContext();
             List<BddObject> bdd = (List<BddObject>) context.getAttribute("bdd");
             Object[] axes = new Axe().getData(BddObject.getPostgreSQL(), null);
-            for (Object object : axes) {
-                Axe axe = (Axe) object;
-                bdd.add(new Information(axe.getIdAxe(), ((User) bdd.get(0)).getIdUser(), request.getParameter(axe.getNom())));
-            }
+            for (Object object : axes)
+                bdd.add(new Information(((Axe) object).getIdAxe(), ((User) bdd.get(0)).getIdUser(), request.getParameter(((Axe) object).getNom())));
             response.sendRedirect("critere");
         } catch (InvocationTargetException e) {
             PrintWriter out = response.getWriter();

@@ -125,32 +125,12 @@ public class User extends BddObject {
         return convert(this.getData(getPostgreSQL(), null, "nom", "password"));
     }
 
-    public User[] findByID(String id) throws Exception {
-        User user = new User();
-        user.setIdUser(id);
-        return convert(this.getData(getPostgreSQL(), null, "iduser"));
-    }
-
     public User[] convert(List<User> users) {
         User[] results = new User[users.size()]; 
         for (int i = 0; i < results.length; i++)
             results[i] = users.get(i);
         return results;
     }
-
-    // public User[] getProposition() throws Exception {
-    //     User table = new User();
-    //     table.setTable("get_classement('" + this.getIdUser() + "', '" + this.getGenreOpposite() + "') AS f(idUser, nom, password, genre, note)");
-    //     Object[] users = table.getData(getPostgreSQL(), null);
-    //     User[] propositions = new User[users.length];
-    //     this.setCritereInfos();
-    //     for (int i = 0; i < users.length; i++) {
-    //         User user = (User) users[i];
-    //         user.setCritereInfos();
-    //         propositions[i] = user;
-    //     }
-    //     return propositions;
-    // 
 
     public double getNote(User user) throws Exception {
         double somme = 0;
@@ -183,12 +163,6 @@ public class User extends BddObject {
         Liste.sort(results, "getNote", "DESC");
         return results;
     }
-
-    // public Note getNote(User user) throws Exception {
-    //     String query = "SELECT SUM(note) / SUM(coefficient) FROM (SELECT (note*coefficient) as note, c.coefficient FROM (SELECT * FROM informations WHERE idUser = '" + user.getIdUser() + "') AS info JOIN (SELECT * FROM criteres WHERE idUser = '" + this.getIdUser() + "') AS c ON info.idAxe = c.idAxe JOIN axes AS axe ON info.idAxe = axe.idAxe) AS note;";
-    //     Note note = new Note();
-    //     return (Note) note.getData(query, BddObject.getPostgreSQL())[0];
-    // }
 
     public boolean checkMatch(User user) throws Exception {
         Match match = new Match();
