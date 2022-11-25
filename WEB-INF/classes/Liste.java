@@ -1,11 +1,16 @@
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-
 import axe.Axe;
 import connection.BddObject;
-import user.*;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import user.User;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 
 public class Liste extends HttpServlet {
 
@@ -14,11 +19,11 @@ public class Liste extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("id");
         try {
-            request.setAttribute("proposition", user.getProposition((request.getParameter("check") != null) ? Boolean.parseBoolean(request.getParameter("check")) : true));
+            request.setAttribute("proposition", user.getProposition(request.getParameter("check") == null || Boolean.parseBoolean(request.getParameter("check"))));
             request.setAttribute("user", user);
             request.setAttribute("axe", Axe.convert(new Axe().getData(BddObject.getPostgreSQL(), "idAxe")));
-            RequestDispatcher dispat = request.getRequestDispatcher("liste.jsp");
-            dispat.forward(request, response);
+            RequestDispatcher disparate = request.getRequestDispatcher("liste.jsp");
+            disparate.forward(request, response);
         } catch (InvocationTargetException e) {
             PrintWriter out = response.getWriter();
             out.println(e.getCause().getMessage());

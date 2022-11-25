@@ -1,7 +1,5 @@
 package user;
 
-import java.util.ArrayList;
-import java.util.List;
 import agregation.Liste;
 import axe.Axe;
 import connection.BddObject;
@@ -9,6 +7,8 @@ import info.Critere;
 import info.Information;
 import match.Match;
 import note.Note;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User extends BddObject {
 
@@ -27,6 +27,10 @@ public class User extends BddObject {
     public double getNote() {
         return note;
     }
+
+    public String getPassword() {
+        return password;
+    }
     
     public String getIdUser() {
         return idUser;
@@ -34,10 +38,6 @@ public class User extends BddObject {
     
     public String getNom() {
         return nom;
-    }
-    
-    public String getPassword() {
-        return password;
     }
     
     public Critere[] getCriteres() {
@@ -55,8 +55,7 @@ public class User extends BddObject {
         else throw new Exception("Genre is not found");
     }
     
-    public void setNote(double note) throws Exception {
-        
+    public void setNote(double note) {
         this.note = note;
     }
     
@@ -66,7 +65,7 @@ public class User extends BddObject {
         this.idUser = id;
     }
 
-    public void setNom(String name) throws Exception {
+    public void setNom(String name) {
         this.nom = name;
     }
 
@@ -87,10 +86,6 @@ public class User extends BddObject {
         this.setCountPK(7);
         this.setPrefix("USR");
         this.setFunctionPK("getsequser()");
-    }
-
-    public String getGenreOpposite() {
-        return (genre.equals("feminin")) ? "masculin" : "feminin";
     }
 
     public User(String name, String password, String genre) throws Exception {
@@ -142,25 +137,25 @@ public class User extends BddObject {
             somme += this.criteres[i].getCoefficient() * note.convertToNote(user.getInfos()[i].getValeur());
             coefficient += this.criteres[i].getCoefficient();
         }
-        return somme / coefficient;
+        return somme;
     }
 
     public User[] getProposition(boolean condition) throws Exception {
         User userTable = new User();
         userTable.setTable("get_users_disponible('" + this.getIdUser() + "') AS f(idUser, nom, password, genre)");
         User[] users = User.convert(userTable.getData(getPostgreSQL(), null));
-        List<User> match = new ArrayList<User>();
+        List<User> match = new ArrayList<>();
         this.setCritereInfos();
         for (User user : users) {
             user.setCritereInfos();
             user.setNote(this.getNote(user));
-            boolean check = (condition) ? user.getNote() >= 12 && user.getNote(this) >= 12 && !this.getIdUser().equals(user.getIdUser()) && !this.getGenre().equals(user.getGenre()) 
+            boolean check = (condition) ? user.getNote() >= 10 && user.getNote(this) >= 10 && !this.getIdUser().equals(user.getIdUser()) && !this.getGenre().equals(user.getGenre()) 
             : (!this.getIdUser().equals(user.getIdUser()) && !this.getGenre().equals(user.getGenre()));
             if (check)
                 match.add(user);
         }
         User[] results = convert(match);
-        Liste.sort(results, "getNote", "DESC");
+        Liste.sort(results, "getNote", "ASC");
         return results;
     }
 

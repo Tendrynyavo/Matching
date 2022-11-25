@@ -1,10 +1,15 @@
-import jakarta.servlet.http.HttpServlet;
-import match.Match;
-import java.io.*;
 import connection.BddObject;
-import user.*;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import match.Match;
+import user.User;
+
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class ListMatch extends HttpServlet {
     
@@ -17,8 +22,8 @@ public class ListMatch extends HttpServlet {
             match.setIdUserMatch(user.getIdUser());
             request.setAttribute("matchs", Match.convert(match.getData(BddObject.getPostgreSQL(), null, "idUserMatch")));
             request.setAttribute("user", user);
-            RequestDispatcher dispat = request.getRequestDispatcher("listeMatch.jsp");
-            dispat.forward(request, response);
+            RequestDispatcher disparate = request.getRequestDispatcher("listeMatch.jsp");
+            disparate.forward(request, response);
         } catch (Exception e) {
             PrintWriter out = response.getWriter();
             out.println(e.getMessage());

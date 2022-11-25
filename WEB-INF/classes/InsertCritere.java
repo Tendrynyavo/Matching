@@ -1,14 +1,19 @@
-import java.io.*;
-import java.sql.Connection;
-import java.util.List;
 import axe.Axe;
 import connection.BddObject;
 import info.Critere;
 import info.Intervalle;
 import info.Precision;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import user.User;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.util.List;
 
 public class InsertCritere extends HttpServlet {
     
@@ -42,10 +47,10 @@ public class InsertCritere extends HttpServlet {
                 data.insert(connection);
             connection.commit();
         } catch (Exception e) {
-            connection.rollback();
+            if (connection != null) connection.rollback();
             throw e;
         } finally {
-            connection.close();
+            if (connection != null) connection.close();
         }
     }
 }

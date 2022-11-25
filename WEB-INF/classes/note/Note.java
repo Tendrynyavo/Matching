@@ -41,16 +41,15 @@ public class Note extends BddObject {
     
     public double convertToNote(String value) throws Exception {
         double note = 0;
-        switch (axe.getIdAxe()) {
+        switch (this.getAxe().getIdAxe()) {
             case "A020":
-                if (value.equals("Oui")) note = 18;
-                else note = 9;    
-            break;
+                note = getNote(value);
+                break;
             case "A030":
                 note = Double.parseDouble(value) / 10;
                 break;
             case "A040":
-                note = Double.parseDouble(value) / 500;
+                note = getNote(getIntervaleSalaire(value));
                 break;
             case "A050":
                 String index = value.split("[+]")[1];
@@ -60,7 +59,7 @@ public class Note extends BddObject {
                 note = getNote(value);
                 break;
             case "A070":
-                note = getNote(getIntervalle(value));
+                note = getNote(getIntervalAge(value));
                 break;
             default:
                 note = Double.parseDouble(value);
@@ -68,12 +67,23 @@ public class Note extends BddObject {
         return (note > 20) ? 20 : note;
     }
 
-    public static String getIntervalle(String valeur) throws Exception {
-        int age = Integer.parseInt(valeur);
-        int[][] intervalle = {{20, 30}, {30, 40}, {40, 50}, {50, 60}};
-        for (int i = 0; i < intervalle.length; i++) {
-            if (intervalle[i][0] <= age && age <= intervalle[i][1])
-                return intervalle[i][0] + "-" + intervalle[i][1];
+    public static String getIntervalAge(String value) throws Exception {
+        int age = Integer.parseInt(value);
+        int[][] intervals = {{20, 30}, {30, 40}, {40, 50}, {50, 60}};
+        for (int[] interval : intervals) {
+            if (interval[0] <= age && age < interval[1])
+                return interval[0] + "-" + interval[1];
+        }
+        throw new Exception("Intervalle not found");
+    }
+
+    public static String getIntervaleSalaire(String value) throws Exception {
+        double age = Double.parseDouble(value);
+        double[][] intervals = {{0, 50000}, {50000, 100000}};
+        if (age >= 100000) return "100000 et superieur";
+        for (double[] interval : intervals) {
+            if (interval[0] <= age && age <= interval[1])
+                return interval[0] + "-" + interval[1];
         }
         throw new Exception("Intervalle not found");
     }

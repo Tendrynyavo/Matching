@@ -1,9 +1,12 @@
-import java.io.*;
-
 import axe.Axe;
 import connection.BddObject;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 public class ListCritere extends HttpServlet {
     
@@ -11,8 +14,8 @@ public class ListCritere extends HttpServlet {
         throws ServletException, IOException {
         try {
             request.setAttribute("axes", Axe.convert(new Axe().getData(BddObject.getPostgreSQL(), null)));
-            RequestDispatcher dispat = request.getRequestDispatcher("critere.jsp");
-            dispat.forward(request, response);
+            RequestDispatcher disparate = request.getRequestDispatcher("critere.jsp");
+            disparate.forward(request, response);
         } catch (Exception e) {
             response.sendRedirect("error.jsp?error="+e.getMessage());
         }
