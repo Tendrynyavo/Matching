@@ -129,13 +129,11 @@ public class User extends BddObject {
 
     public double getNote(User user) throws Exception {
         double somme = 0;
-        double coefficient = 0;
         for (int i = 0; i < this.criteres.length; i++) {
             Axe axe = new Axe();
             axe.setIdAxe(this.criteres[i].getIdAxe());
             Note note = new Note(axe, this);
             somme += this.criteres[i].getCoefficient() * note.convertToNote(user.getInfos()[i].getValeur());
-            coefficient += this.criteres[i].getCoefficient();
         }
         return somme;
     }
@@ -151,11 +149,10 @@ public class User extends BddObject {
             user.setNote(this.getNote(user));
             boolean check = (condition) ? user.getNote() >= 10 && user.getNote(this) >= 10 && !this.getIdUser().equals(user.getIdUser()) && !this.getGenre().equals(user.getGenre()) 
             : (!this.getIdUser().equals(user.getIdUser()) && !this.getGenre().equals(user.getGenre()));
-            if (check)
-                match.add(user);
+            if (check) match.add(user);
         }
         User[] results = convert(match);
-        Liste.sort(results, "getNote", "ASC");
+        Liste.sort(results, "getNote", "DESC");
         return results;
     }
 

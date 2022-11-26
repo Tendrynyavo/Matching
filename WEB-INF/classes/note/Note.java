@@ -49,7 +49,8 @@ public class Note extends BddObject {
                 note = Double.parseDouble(value) / 10;
                 break;
             case "A040":
-                note = getNote(getIntervaleSalaire(value));
+                if (Double.parseDouble(value) >= 100000) note = getNote("100000 et superieur");
+                else note = getNote(getInterval(value, new int[][] {{0, 50000}, {50000, 100000}}));
                 break;
             case "A050":
                 String index = value.split("[+]")[1];
@@ -59,7 +60,7 @@ public class Note extends BddObject {
                 note = getNote(value);
                 break;
             case "A070":
-                note = getNote(getIntervalAge(value));
+                note = getNote(getInterval(value, new int[][] {{20, 30}, {30, 40}, {40, 50}, {50, 60}}));
                 break;
             default:
                 note = Double.parseDouble(value);
@@ -67,22 +68,10 @@ public class Note extends BddObject {
         return (note > 20) ? 20 : note;
     }
 
-    public static String getIntervalAge(String value) throws Exception {
-        int age = Integer.parseInt(value);
-        int[][] intervals = {{20, 30}, {30, 40}, {40, 50}, {50, 60}};
+    public static String getInterval(String value, int[][] intervals) throws Exception {
+        int valeur = Integer.parseInt(value);
         for (int[] interval : intervals) {
-            if (interval[0] <= age && age < interval[1])
-                return interval[0] + "-" + interval[1];
-        }
-        throw new Exception("Intervalle not found");
-    }
-
-    public static String getIntervaleSalaire(String value) throws Exception {
-        double age = Double.parseDouble(value);
-        double[][] intervals = {{0, 50000}, {50000, 100000}};
-        if (age >= 100000) return "100000 et superieur";
-        for (double[] interval : intervals) {
-            if (interval[0] <= age && age <= interval[1])
+            if (interval[0] <= valeur && valeur < interval[1])
                 return interval[0] + "-" + interval[1];
         }
         throw new Exception("Intervalle not found");

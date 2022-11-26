@@ -9,7 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 public abstract class BddObject {
@@ -64,14 +65,7 @@ public abstract class BddObject {
         connection.setAutoCommit(false);
         return connection;
     }
-    
-    /**
-     * <p>Get list of column name in query<p>
-     * @param query : {@code SELECT} query
-     * @param connection : your database 
-     * @return
-     * @throws Exception
-     */
+
     public static String[] listColumn(String query, Connection connection) throws Exception {
         Statement stmt = connection.createStatement();
         ResultSet rs = stmt.executeQuery(query);
@@ -97,16 +91,16 @@ public abstract class BddObject {
         Statement statement = connection.createStatement();
         ResultSet result = statement.executeQuery(query);
         String[] liste = listColumn(query, connection); // get liste of column length
-        Object[] employees = convertToObject(result, liste.length);
+        Object[] objects = convertToObject(result, liste.length);
         result.close();
         statement.close();
         connection.close();
-        return employees;
+        return objects;
     }
 
     public Object[] convertToObject(ResultSet result, int attribut) throws Exception {
         Field[] attributs = this.getClass().getDeclaredFields();
-        Vector<Object> objects = new Vector<Object>();
+        List<Object> objects = new ArrayList<>();
         while (result.next()) {
             Object object = this.getClass().getConstructor().newInstance();
             for (int i = 0; i < attribut; i++) {
@@ -142,7 +136,7 @@ public abstract class BddObject {
         if (connect) {connection.commit(); connection.close();}
     }
     
-    static String createColumn(String[] colonnes) {
+    public static String createColumn(String[] colonnes) {
         String result = "(";
         for (String colonne : colonnes)
             result += colonne + ",";
@@ -175,31 +169,13 @@ public abstract class BddObject {
     }
 
     public static String toUpperCaseFisrtLetter(String name) {
-        String firstLetter = name.substring(0, 1);
-        String remainingLetters = name.substring(1);
-        firstLetter = firstLetter.toUpperCase();
-        name = firstLetter + remainingLetters;
-        return name;
+        return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
-    public String buildPrimaryKey(Connection connection) throws SQLException {
-        return this.getPrefix() + completeZero(getSequence(connection), this.getCountPK() - this.getPrefix().length());
-    }
-
-    public String getSequence(Connection connection) throws SQLException {
-        Statement statement = connection.createStatement();
-        String sql = (getDatabaseName(connection).equals("PostgreSQL")) ? "SELECT " + this.getFunctionPK() : "SELECT " + this.getFunctionPK() + " FROM DUAL";
-        ResultSet result = statement.executeQuery(sql);
-        result.next();
-        String sequence = result.getString(1);
-        statement.close();
-        result.close();
-        connection.close();
-        return sequence;
-    }
-
-    public static String getDatabaseName(Connection connection) throws SQLException {
-        return connection.getMetaData().getDatabaseProductName();
+    public String buildPrimaryKey(Connection connection) throws Exception {
+        String sql = (connection.getMetaData().getDatabaseProductName().equals("PostgreSQL")) ? "SELECT " + this.getFunctionPK() : "SELECT " + this.getFunctionPK() + " FROM DUAL";
+        Sequence sequence = Sequence.convert(new Sequence().getData(sql, connection))[0];
+        return this.getPrefix() + completeZero(sequence.getSequence(), this.getCountPK() - this.getPrefix().length());
     }
     
     public static String completeZero(String seq, int count) {
@@ -216,10 +192,8 @@ public abstract class BddObject {
         Statement statement = connection.createStatement();
         String sql = "SELECT * FROM " + this.getTable() + " WHERE " + ID + " = " + convertToLegal(this.getClass().getMethod("get" + toUpperCaseFisrtLetter(ID)).invoke(this));
         ResultSet result = statement.executeQuery(sql);
-        while (result.next()) {
-            Historique historique = new Historique(this.getTable(), "update", new Date(System.currentTimeMillis()), getValue(result, listColumn(sql, connection).length));
-            historique.insert(connection);
-        }
+        while (result.next())
+            new Historique(this.getTable(), "update", new Date(System.currentTimeMillis()), getValue(result, listColumn(sql, connection).length)).insert(connection);
         statement.close();
         if (connect) {connection.commit(); connection.close();}
     }
@@ -230,13 +204,5 @@ public abstract class BddObject {
         for (int i = 0; i < nombre; i++)
             sql += fields[i].getName() + ":" + result.getString(i + 1) + ";";
         return sql.substring(0, sql.length() - 1); // Delete last " AND " in sql
-    }
-
-    public String getColonneID(Connection connection) throws Exception {
-        ResultSet pkColumns = connection.getMetaData().getPrimaryKeys(null, null, this.getTable());
-        pkColumns.next();
-        String pkColumnName = pkColumns.getString("COLUMN_NAME");
-        pkColumns.close();
-        return pkColumnName;
     }
 }

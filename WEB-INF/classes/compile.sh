@@ -21,3 +21,4 @@ javac ./InsertIndisponible.java
 javac ./note/Note.java
 javac ./info/Precision.java
 javac ./info/Intervalle.java
+javac ./connection/Sequence.java

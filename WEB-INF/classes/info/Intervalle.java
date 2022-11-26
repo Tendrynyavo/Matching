@@ -41,7 +41,7 @@ public class Intervalle extends BddObject {
         this.setFunctionPK("getSeqIntervalle()");
     }
 
-    public Intervalle(String idAxe, String intervalle) throws ClassNotFoundException, SQLException {
+    public Intervalle(String idAxe, String intervalle) throws Exception {
         this();
         this.setIdIntervalle(buildPrimaryKey(getPostgreSQL()));
         this.setIdAxe(idAxe);
